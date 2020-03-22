@@ -170,3 +170,19 @@ input, textarea, select, .uneditable-input {
 input {
   height: auto !important;
 }
+
+/* error_explanation: エラーメッセージにスタイルを与えるための CSS id */
+#error_explanation {
+  color: red;
+  ul {
+    color: red;
+    margin: 0 0 30px 0;
+  }
+}
+
+.field_with_errors {
+  @extend .has-error;
+  .form-controle {
+    color: $state-danger-text;
+  }
+}
