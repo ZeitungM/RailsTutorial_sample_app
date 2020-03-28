@@ -27,4 +27,24 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_select   'div.field_with_errors'
   end
   
+  test "valid signup information" do
+    get signup_path # get でユーザ登録ページへアクセス
+    assert_difference 'User.count', 1 do
+    # post メソッドでリクエストを送信 (User.new に使うデータをハッシュ params[:user] にまとめる )
+    post signup_path, params:
+    {
+      user:
+        {
+          name: "Example User2",
+          email: "user2@example.com",
+          password: "password",
+          password_confirmation: "password"
+        }
+    }
+    end
+    follow_redirect! # POST リクエスト送信後、指定されたリダイレクト先に移動する
+    assert_template 'users/show'
+    assert_not      flash.blank?
+  end
+  
 end
