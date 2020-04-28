@@ -30,6 +30,11 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, User.digest(remember_token) )
   end
   
+  # ユーザのログイン情報を破棄する
+  def forget
+    update_attribute(:remember_digest, nil)
+  end
+  
   # 渡されたトークン(remember_token)が、ダイジェスト(remember_digest = self.remember_digest)と一致したら true を返す
   def authenticated?(remember_token)
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
