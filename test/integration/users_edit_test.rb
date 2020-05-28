@@ -10,23 +10,24 @@ class UsersEditTest < ActionDispatch::IntegrationTest
     @user = users(:michael)
   end
   
-  test "unsuccessful edit" do
-    log_in_as(@user)
-    get edit_user_path(@user)
-    assert_template 'users/edit'
-    patch user_path(@user), params: { user: { name: "",
-                                              email: "foo@invalid",
-                                              password: "foo",
-                                              password_confirmation: "bar"
-                                            }
-                                    }
-    assert_template 'users/edit'
-  end
+#  test "unsuccessful edit" do
+#    # リダイレクトで edit 用のテンプレートが描画されなくなるのでこのテストを削除
+#    log_in_as(@user)
+#    get edit_user_path(@user)
+#    assert_template 'users/edit'
+#    patch user_path(@user), params: { user: { name: "",
+#                                              email: "foo@invalid",
+#                                              password: "foo",
+#                                              password_confirmation: "bar"
+#                                            }
+#                                    }
+#    assert_template 'users/edit'
+#  end
   
-  test "successful edit" do
-    log_in_as(@user)
+  test "successful edit with friendly forwarding" do
     get edit_user_path(@user)
-    assert_template 'users/edit'
+    log_in_as(@user)
+    assert_redirected_to edit_user_url(@user)
     name = "Foo Bar"
     email = "foo@bar.com"
     patch user_path(@user), params: { user: { name: name,
@@ -43,6 +44,19 @@ class UsersEditTest < ActionDispatch::IntegrationTest
     @user.reload # 最新のユーザ情報を読み直す
     assert_equal name,  @user.name
     assert_equal email, @user.email
+  end
+  
+  test "forwarding_url must be nil after friendly forwarding" do
+    get edit_user_path(@user)
+    log_in_as(@user)
+    assert_redirected_to edit_user_url(@user)
+    
+    delete logout_path
+    log_in_as(@user)
+    
+    # リダイレクトのテスト
+    assert_redirected_to @user
+    assert_nil session[:forwarding_url]
   end
   
 end

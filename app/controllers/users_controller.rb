@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     if @user.save
       log_in @user
       flash[:success] = "Welcom to the Sample App!"
-      redirect_to @user
+      redirect_to @user # user_url(user) へのリダイレクト？
     else
       render 'new'
     end
@@ -45,6 +45,7 @@ class UsersController < ApplicationController
     
     def is_logged_in_user
       unless logged_in?
+        store_location  # リダイレクト前にアクセスしようとしたページを覚えておく
         flash[:danger] = "Please log in."
         redirect_to login_url
       end
