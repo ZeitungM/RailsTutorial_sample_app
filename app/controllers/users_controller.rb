@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :is_logged_in_user, only: [:edit, :update]
+  before_action :is_logged_in_user, only: [:edit, :index, :update]
   before_action :is_correct_user,   only: [:edit, :update]
   
   def show
@@ -23,6 +23,10 @@ class UsersController < ApplicationController
   
   def edit
     @user = User.find(params[:id])
+  end
+  
+  def index
+    @users = User.all
   end
   
   def update
