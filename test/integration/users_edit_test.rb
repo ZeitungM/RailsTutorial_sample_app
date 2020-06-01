@@ -46,17 +46,20 @@ class UsersEditTest < ActionDispatch::IntegrationTest
     assert_equal email, @user.email
   end
   
+  # 演習 10.2.3.1: friendly forwarding の後、 login_path を介してログインした際、 edit_user_path にリダイレクトされないことのテスト
+  # ( friendly forwarding は 1 回だけ )
   test "forwarding_url must be nil after friendly forwarding" do
     get edit_user_path(@user)
     log_in_as(@user)
     assert_redirected_to edit_user_url(@user)
     
     delete logout_path
+    get login_path
+    assert_nil session[:forwarding_url]
     log_in_as(@user)
     
     # リダイレクトのテスト
     assert_redirected_to @user
-    assert_nil session[:forwarding_url]
   end
   
 end

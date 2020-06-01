@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   def create
     @user = User.find_by(email: params[:session][:email].downcase)
     if @user && @user.authenticate(params[:session][:password])
-      # ユーザログイン後にユーザ情報のページにリダイレクトする
+      # ユーザログイン後に friendly-forwarding のリダイレクト先か、ユーザ情報のページにリダイレクトする
       log_in @user
       params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
       redirect_back_or @user
