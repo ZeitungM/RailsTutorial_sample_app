@@ -1,0 +1,10 @@
+<% provide(:title, 'All usrs') %>
+<h1>All users</h1>
+
+<%= will_paginate %>
+
+<ul class="users">
+  <%= render @users %> <!-- @users を User オブジェクトのリストと解釈、パーシャル _user.html.erb をレンダリング -->
+</ul>
+
+<%= will_paginate %>
