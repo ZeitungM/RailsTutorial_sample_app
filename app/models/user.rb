@@ -37,10 +37,12 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, nil)
   end
   
-  # 渡されたトークン(remember_token)が、ダイジェスト(remember_digest = self.remember_digest)と一致したら true を返す
-  def authenticated?(remember_token)
-    return false if remember_digest.nil?
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  # 渡されたトークン(remember_token)が、 DB のダイジェスト(remember_digest = self.remember_digest)と一致したら true を返す
+  def authenticated?( attribute, token)
+    # attribute で token と digest の種類を指定
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
   
   private
@@ -50,7 +52,7 @@ class User < ApplicationRecord
   
     def create_activation_digest
       self.activation_token  = User.new_token
-      self.activation_digest = User.digest(activation_digest)
+      self.activation_digest = User.digest(activation_token)
     end
   
 end
