@@ -3,14 +3,20 @@ class SessionsController < ApplicationController
   end
   
   def create
-    @user = User.find_by(email: params[:session][:email].downcase)
-    if @user && @user.authenticate(params[:session][:password])
-      # ユーザログイン後に friendly-forwarding のリダイレクト先か、ユーザ情報のページにリダイレクトする
-      log_in @user
-      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
-      redirect_back_or @user
+    user = User.find_by(email: params[:session][:email].downcase)
+    if user && user.authenticated?(params[:session][:password])
+      if user.activated?
+        # ユーザログイン後に friendly-forwarding のリダイレクト先か、ユーザ情報のページにリダイレクトする
+        log_in user
+        params[:session][:remember_me] == '1' ? remember(user) : forget(user)
+        redirect_back_or user
+      else
+        message = "Account not activated."
+        message += "Check your email for the activation link."
+        flash.now[:warning] = message
+        redirect_to root_url
+      end
     else
-      # エラーメッセージを作成する
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new'
     end
