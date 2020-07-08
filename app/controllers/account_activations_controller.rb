@@ -4,6 +4,7 @@ class AccountActivationsController < ApplicationController
     user = User.find_by( email: params[:email])
     # 有効化リンクの流出時の再利用防止に備え、未有効化のときのみ実行
     if user && !user.activated? && user.authenticated?( :activation, params[:id])
+      user.activate
       user.update_attribute( :activated,    true )
       user.update_attribute( :activated_at, Time.zone.now )
       log_in user

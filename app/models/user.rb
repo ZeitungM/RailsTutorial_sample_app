@@ -15,6 +15,8 @@ class User < ApplicationRecord
                         allow_nil: true)
   
   class << self
+    # クラスメソッド
+    
     # 渡された文字列のハッシュ値を返す
     def digest(string)
       cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
@@ -26,10 +28,22 @@ class User < ApplicationRecord
     end
   end
     
+  
+  # アカウントを有効にする
+  def activate
+    update_attribute( :activated,    true)
+    update_attribute( :activated_at, Time.zone.now)
+  end
+  
   # 永続セッションのためにユーザをデータベースに記憶する
   def remember
     self.remember_token = User.new_token
     update_attribute(:remember_digest, User.digest(remember_token) )
+  end
+  
+  # 有効化用のメールを送信する
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
   end
   
   # ユーザのログイン情報を破棄する
