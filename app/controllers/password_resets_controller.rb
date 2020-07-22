@@ -1,6 +1,7 @@
 class PasswordResetsController < ApplicationController
-  before_action :get_user,   only: [:edit, :update]
-  before_action :valid_user, only: [:edit, :update]
+  before_action :get_user,         only: [:edit, :update]
+  before_action :valid_user,       only: [:edit, :update]
+  before_action :check_expiration, only: [:edit, :update]
   
   def new
   end
@@ -21,7 +22,25 @@ class PasswordResetsController < ApplicationController
   def edit
   end
   
+  def update
+    if params[:user][:password].empty? # (3) パスワードが空
+      @user.errors.add(:password, :blank)
+      render 'edit'
+    elsif @user.update_attributes(user_params) # (4)
+      log_in @user
+      flash[:success] = "Password has been reset."
+      redirect_to @user
+    else # (2)
+      render 'edit'
+    end
+  end
+  
   private
+    # Strong Parameter
+    def user_params
+      params.require(:user).permit(:password, :password_confirmation)
+    end
+    
     def get_user
       @user = User.find_by(email: params[:email])
     end
@@ -32,4 +51,12 @@ class PasswordResetsController < ApplicationController
       end
     end
     
+    # トークンの有効期限を調べる
+    def check_expiration
+      if @user.password_reset_exired?
+        flash[:danger] = "Password reset has expired."
+        redirect_to new_password_reset_url
+      end
+    end
+
 end
