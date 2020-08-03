@@ -1,0 +1,7 @@
+<% if @feed_items.any? %>
+  <ol class="microposts">
+    <!--  @feed_items の各要素は Micropost クラスを持っているので、 Micropost のパーシャルを呼び出せる -->
+    <%= render @feed_items %>
+  </ol>
+  <%= will_paginate @feed_items %>
+<% end %>

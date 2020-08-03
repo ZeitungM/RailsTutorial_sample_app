@@ -36,6 +36,10 @@ class User < ApplicationRecord
                     activated_at: Time.zone.now)
   end
   
+  def feed
+    Micropost.where("user_id = ?", id)
+  end
+  
   # 永続セッションのためにユーザをデータベースに記憶する
   def remember
     self.remember_token = User.new_token
