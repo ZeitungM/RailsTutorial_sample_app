@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :is_logged_in_user, only: [:edit, :destroy, :index, :update]
+  before_action :is_logged_in_user, only: [:edit, :destroy, :index, :update, :followers, :following]
   before_action :is_correct_user,   only: [:edit, :update]
   before_action :is_admin_user,     only: [:destroy]
   
@@ -32,6 +32,20 @@ class UsersController < ApplicationController
   
   def edit
     @user = User.find(params[:id])
+  end
+  
+  def following
+    @title = "Following"
+    @user  = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render 'show_follow'
+  end
+  
+  def followers
+    @title = "Followers"
+    @user  = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
   end
   
   def index
