@@ -46,7 +46,7 @@ class User < ApplicationRecord
   end
   
   def feed
-    Micropost.where("user_id = ?", id)
+    Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
   end
   
   # 永続セッションのためにユーザをデータベースに記憶する
@@ -82,7 +82,6 @@ class User < ApplicationRecord
   
   # パスワード再設定のメールを送信する
   def send_password_reset_email
-    # XXX: このままでは無効なメールアドレスが入力された場合にのみ正常に動作する
     UserMailer.password_reset(self).deliver_now
   end
   
